@@ -11,7 +11,7 @@ public class Main {
     static BlockingQueue<String> blockingQueueB = new ArrayBlockingQueue<>(100);
     static BlockingQueue<String> blockingQueueC = new ArrayBlockingQueue<>(100);
     static int textLength = 10_000;
-    static int numberOfTexts = 100_000;
+    static int numberOfTexts = 100;
     static int maxA = 0;
     static int maxB = 0;
     static int maxC = 0;
@@ -34,16 +34,7 @@ public class Main {
         }).start();
         new Thread(() -> {//счетчик а
 
-            int maxCurrent = 0;
-            while (blockingQueueA.iterator().hasNext()) {
-                String text;
-                try {
-                    text = blockingQueueA.take();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                maxCurrent = countLetter(text, 'a');
-            }
+            int maxCurrent = bqCount(blockingQueueA, 'a');
             if (maxCurrent > maxA) {
                 maxA = maxCurrent;
             }
@@ -52,16 +43,7 @@ public class Main {
         }).start();
         new Thread(() -> {//счетчик b
 
-            int maxCurrent = 0;
-            while (blockingQueueB.iterator().hasNext()) {
-                String text;
-                try {
-                    text = blockingQueueB.take();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                maxCurrent = countLetter(text, 'b');
-            }
+            int maxCurrent = bqCount(blockingQueueA, 'b');
             if (maxCurrent > maxB) {
                 maxB = maxCurrent;
             }
@@ -71,16 +53,7 @@ public class Main {
         }).start();
         new Thread(() -> {//счетчик c
 
-            int maxCurrent = 0;
-            while (blockingQueueC.iterator().hasNext()) {
-                String text;
-                try {
-                    text = blockingQueueC.take();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                maxCurrent = countLetter(text, 'c');
-            }
+            int maxCurrent = bqCount(blockingQueueA, 'c');
             if (maxCurrent > maxC) {
                 maxC = maxCurrent;
             }
@@ -110,6 +83,17 @@ public class Main {
         }
         return result;
     }
-
-
+    public static int bqCount (BlockingQueue blockingQueue, char charForCount) {
+        int maxCurrent = 0;
+        while (blockingQueue.iterator().hasNext()) {
+            String text;
+            try {
+                text = (String) blockingQueue.take();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            maxCurrent = countLetter(text, charForCount);
+        }
+        return maxCurrent;
+    }
 }
